@@ -1,0 +1,15 @@
+[project]
+name = "irc"
+authors = ["TyOverby <ty@pre-alpha.com>"]
+version = "0.0.0-alpha"
+
+
+[[bin]]
+name = "irc"
+path = "./src/main.rs"
+
+[dependencies.irc-message]
+git = "https://github.com/TyOverby/irc-message.git"
+
+[dependencies.termbox]
+git = "https://github.com/TyOverby/rust-termbox.git"
