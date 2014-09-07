@@ -1,0 +1,33 @@
+[root]
+name = "irc"
+version = "0.0.0-alpha"
+dependencies = [
+ "console_draw 0.0.1 (git+https://github.com/TyOverby/console_draw.git#57efb752866c4ac63f5c2d8594a0b4b8bcb12db0)",
+ "irc-message 0.0.0-alpha (git+https://github.com/TyOverby/irc-message.git#8f66931afdb30d21326ee5546bc5eab19af96d3b)",
+ "termbox_console 0.0.1 (git+https://github.com/TyOverby/termbox_console.git#00e174479073aed53973d0c82c4e91f496f354f1)",
+]
+
+[[package]]
+name = "console_draw"
+version = "0.0.1"
+source = "git+https://github.com/TyOverby/console_draw.git#57efb752866c4ac63f5c2d8594a0b4b8bcb12db0"
+
+[[package]]
+name = "irc-message"
+version = "0.0.0-alpha"
+source = "git+https://github.com/TyOverby/irc-message.git#8f66931afdb30d21326ee5546bc5eab19af96d3b"
+
+[[package]]
+name = "termbox"
+version = "0.0.0-alpha"
+source = "git+https://github.com/TyOverby/rust-termbox.git#f8fc55e5617726e5f4e8f7b41927b7c8833129e8"
+
+[[package]]
+name = "termbox_console"
+version = "0.0.1"
+source = "git+https://github.com/TyOverby/termbox_console.git#00e174479073aed53973d0c82c4e91f496f354f1"
+dependencies = [
+ "console_draw 0.0.1 (git+https://github.com/TyOverby/console_draw.git#57efb752866c4ac63f5c2d8594a0b4b8bcb12db0)",
+ "termbox 0.0.0-alpha (git+https://github.com/TyOverby/rust-termbox.git#f8fc55e5617726e5f4e8f7b41927b7c8833129e8)",
+]
+

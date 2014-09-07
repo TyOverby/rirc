@@ -1,7 +1,8 @@
 #![crate_type = "lib"]
 
 extern crate irc_message;
-extern crate termbox;
+extern crate termbox_console;
+extern crate console_draw;
 
 use view::View;
 use irc_con::IrcConnection;

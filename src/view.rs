@@ -1,13 +1,11 @@
-extern crate termbox;
-
-use termbox::{
-    Normal,
-    White,
-    Black,
-    Enter,
+use termbox_console::TermboxConsole;
+use console_draw::ConsoleCanvas;
+use console_draw::{
+    Character,
+    Special,
+    Resize,
     Backspace,
-    Backspace2,
-    Space
+    Enter
 };
 
 use std::io::IoResult;
@@ -49,6 +47,7 @@ impl ConWrapper {
 }
 
 pub struct View {
+    console: TermboxConsole,
     con: ConWrapper,
     input_buffer: String,
     width: uint,
@@ -61,12 +60,14 @@ impl View {
         //let con = IrcConnection::new("localhost", 12321);
         match con {
             Ok(c) => {
-                termbox::init();
+                let console = TermboxConsole::new();
+                let (width, height) = (console.width(), console.height());
                 Ok(View {
+                    console: console,
                     con: ConWrapper::new(c),
                     input_buffer: String::new(),
-                    width: termbox::width(),
-                    height: termbox::height()
+                    width: width,
+                    height: height
                 })
             }
             Err(x) => Err(x)
@@ -74,20 +75,20 @@ impl View {
     }
 
     fn repaint(&mut self) {
-        termbox::clear();
+        self.console.clear();
 
         // textbox
         let textbox_y = self.height - 2;
-        termbox::print(1, textbox_y, Normal, White, Black, self.input_buffer.as_slice());
-        termbox::set_cursor(self.input_buffer.len() + 1, textbox_y as uint);
+        self.console.draw(1, textbox_y, self.input_buffer.as_slice());
+        self.console.cursor(self.input_buffer.len() + 1, textbox_y as uint);
 
         // Lines in the buffer
         let mut line_y = 1;
         for &line in self.con.buf.last_n_truncated(self.height - 4, self.width - 2).iter() {
-            termbox::print(1, line_y, Normal, White, Black, line);
+            self.console.draw(1, line_y, line);
             line_y += 1;
         }
-        termbox::present();
+        self.console.present();
     }
 
     pub fn send_msg(&mut self) {
@@ -97,37 +98,28 @@ impl View {
     }
 
     pub fn update(&mut self) -> bool {
-        termbox::clear();
-        match termbox::peek_event(0) {
-            termbox::KeyEvent(_, Some(Space), _) => {
-                self.input_buffer.push_char(' ');
-                self.repaint();
+        self.console.clear();
+        for event in self.console {
+            match event {
+                Character('q') => {
+                    return false;
+                }
+                Character(c) => {
+                    self.input_buffer.push_char(c);
+                }
+                Special(Backspace) => {
+                    self.input_buffer.pop_char();
+                }
+                Special(Enter) => {
+                    self.send_msg();
+                }
+                Resize(w, h) => {
+                    self.width = w;
+                    self.height = h;
+                }
+                _ => {  }
             }
-            termbox::KeyEvent(_, Some(Enter), _) => {
-                self.send_msg();
-                self.repaint();
-            }
-            termbox::KeyEvent(_, Some(Backspace), _) |
-            termbox::KeyEvent(_, Some(Backspace2), _) => {
-                self.input_buffer.pop_char();
-                self.repaint();
-            }
-            termbox::KeyEvent(_, _, Some('q')) => { return false; }
-            termbox::KeyEvent(_, _, Some(c)) => {
-                self.input_buffer.push_char(c);
-                self.repaint();
-            },
-            termbox::ResizeEvent(w, h) => {
-                self.width = w as uint;
-                self.height = h as uint;
-                self.repaint();
-            }
-            termbox::NoEvent => {}
-            termbox::KeyEvent(a,b,c) => {
-                let foo = format!("{},{},{}", a, b, c);
-                assert!(false);
-                termbox::print(5,10, Normal, White, Black, foo.as_slice());
-            }
+            self.repaint();
         }
 
         match self.con.drink() {
@@ -136,12 +128,5 @@ impl View {
             Err(()) => { return false; }
         }
         true
-
-    }
-}
-
-impl Drop for View {
-    fn drop(&mut self) {
-        termbox::shutdown();
     }
 }

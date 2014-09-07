@@ -1,13 +1,6 @@
-extern crate termbox;
 use std::io::net::tcp::TcpStream;
 use std::io::{ BufferedStream, IoResult };
 use std::io::TimedOut;
-
-use termbox::{
-    Normal,
-    White,
-    Black,
-};
 
 use std::comm::{
     Sender,
@@ -57,15 +50,11 @@ fn writer(stream: TcpStream) -> Sender<String> {
         let receiver = r;
         let mut stream = stream;
         loop {
-            //termbox::print(20,20, Normal, White, Black, "foo");
-            //termbox::present();
             let line: String = match receiver.try_recv() {
                 Ok(s) => s,
                 Err(Empty) => { continue; }
                 Err(Disconnected) => { break; }
             };
-            termbox::print(20,20, Normal, White, Black, line.as_slice());
-            termbox::present();
             match stream.write_str(line.as_slice()) {
                 Ok(()) => {
                     match stream.flush() {

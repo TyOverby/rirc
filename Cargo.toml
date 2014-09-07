@@ -11,5 +11,8 @@ path = "./src/main.rs"
 [dependencies.irc-message]
 git = "https://github.com/TyOverby/irc-message.git"
 
-[dependencies.termbox]
-git = "https://github.com/TyOverby/rust-termbox.git"
+[dependencies.console_draw]
+git = "https://github.com/TyOverby/console_draw.git"
+
+[dependencies.termbox_console]
+git = "https://github.com/TyOverby/termbox_console.git"
